@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
-import { Lock, Mail } from 'lucide-vue-next';
+import { Lock, Mail, ArrowRight } from 'lucide-vue-next';
 import BrandLogo from '../components/common/BrandLogo.vue';
 
 const email = ref('admin@nexus.com');
@@ -13,7 +13,7 @@ const loading = ref(false);
 
 const handleLogin = async () => {
   loading.value = true;
-  await new Promise(r => setTimeout(r, 1000)); // Fake network delay
+  await new Promise(r => setTimeout(r, 1000));
   const success = await auth.login(email.value, password.value);
   if (success) {
     router.push('/');
@@ -24,39 +24,59 @@ const handleLogin = async () => {
 
 <template>
   <div class="login-wrapper">
-    <div class="login-card">
-      <div class="brand-header">
-        <BrandLogo class="justify-center scale-150" />
-        <p class="subtitle mt-4">Enterprise Administration</p>
+    <div class="login-container">
+      <!-- Login Card -->
+      <div class="login-card">
+        <div class="card-header">
+           <div class="brand-centered">
+             <BrandLogo class="scale-110" />
+           </div>
+           <p class="subtitle">Enterprise Administration Portal</p>
+        </div>
+
+        <form @submit.prevent="handleLogin" class="login-form">
+          <div class="form-group">
+            <label>Work Email</label>
+            <div class="input-wrapper">
+              <Mail class="input-icon" :size="20" />
+              <input 
+                type="email" 
+                v-model="email" 
+                class="input-field" 
+                placeholder="name@company.com" 
+                required 
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label>Password</label>
+              <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+            <div class="input-wrapper">
+              <Lock class="input-icon" :size="20" />
+              <input 
+                type="password" 
+                v-model="password" 
+                class="input-field" 
+                placeholder="••••••••" 
+                required 
+              />
+            </div>
+          </div>
+
+          <button type="submit" class="btn-submit" :disabled="loading">
+            <span v-if="!loading">Sign In</span>
+            <span v-else>Authenticating...</span>
+            <ArrowRight v-if="!loading" :size="20" />
+          </button>
+        </form>
       </div>
 
-      <form @submit.prevent="handleLogin" class="login-form">
-        <div class="form-group">
-          <label>Email Address</label>
-          <div class="input-icon-wrapper">
-            <Mail class="input-icon" :size="18" />
-            <input type="email" v-model="email" class="input-field with-icon" required />
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Password</label>
-          <div class="input-icon-wrapper">
-            <Lock class="input-icon" :size="18" />
-            <input type="password" v-model="password" class="input-field with-icon" required />
-          </div>
-        </div>
-
-        <button type="submit" class="btn btn-primary btn-block" :disabled="loading">
-          <span v-if="!loading">Sign In to Dashboard</span>
-          <span v-else>Authenticating...</span>
-        </button>
-      </form>
-      
-      <div class="footer-links">
-        <a href="#">Forgot password?</a>
-        <span class="divider">•</span>
-        <a href="#">System Status</a>
+      <!-- Footer Info -->
+      <div class="login-footer">
+        <p>&copy; 2026 Nexus Systems Inc. <span class="divider">|</span> <a href="#">System Status</a></p>
       </div>
     </div>
   </div>
@@ -68,58 +88,67 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(circle at top right, var(--bg-dark-800) 0%, var(--bg-dark-900) 100%);
+  background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+  padding: 1rem;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .login-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--bg-dark-800);
+  background: rgba(30, 41, 59, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 2.5rem;
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--bg-dark-700);
+  border-radius: 16px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 }
 
-.brand-header {
+.card-header {
   text-align: center;
   margin-bottom: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
 }
 
-.logo-box {
-  width: 48px;
-  height: 48px;
-  background: linear-gradient(135deg, var(--primary-600), var(--primary-500));
-  border-radius: 12px;
-  margin: 0 auto 1rem;
+.brand-centered {
+  transform: scale(1.2);
 }
-
-h1 {
-  font-size: 1.75rem;
-  margin-bottom: 0.25rem;
-}
-
-.highlight { color: var(--primary-500); }
 
 .subtitle {
   color: var(--text-muted);
   font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .form-group {
   margin-bottom: 1.5rem;
 }
 
-.form-group label {
+.label-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+label {
   display: block;
   font-size: 0.875rem;
   font-weight: 500;
+  color: var(--text-main);
   margin-bottom: 0.5rem;
-  color: var(--text-muted);
 }
 
-.input-icon-wrapper {
+.input-wrapper {
   position: relative;
+  transition: all 0.2s;
 }
 
 .input-icon {
@@ -128,37 +157,85 @@ h1 {
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-muted);
+  pointer-events: none;
 }
 
-.with-icon {
-  padding-left: 2.75rem;
-}
-
-.btn-block {
+.input-field {
   width: 100%;
-  padding: 0.875rem;
-  font-size: 1rem;
-  margin-top: 0.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid var(--bg-dark-700);
+  padding: 0.75rem 1rem 0.75rem 3rem;
+  border-radius: 8px;
+  color: white;
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-.footer-links {
-  margin-top: 2rem;
+.input-field:focus {
+  border-color: var(--primary-500);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.forgot-link {
+  font-size: 0.875rem;
+  color: var(--primary-500);
+  text-decoration: none;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.btn-submit {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  background: var(--primary-600);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.btn-submit:hover {
+  background: var(--primary-500);
+  transform: translateY(-1px);
+}
+
+.btn-submit:active {
+  transform: translateY(0);
+}
+
+.btn-submit:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-footer {
   text-align: center;
   font-size: 0.875rem;
+  color: var(--text-muted);
 }
 
-.footer-links a {
+.login-footer a {
   color: var(--text-muted);
   text-decoration: none;
-  transition: color 0.2s;
 }
 
-.footer-links a:hover {
-  color: var(--primary-500);
+.login-footer a:hover {
+  color: white;
 }
 
 .divider {
   margin: 0 0.5rem;
-  color: var(--bg-dark-700);
+  opacity: 0.5;
 }
 </style>
